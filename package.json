@@ -28,6 +28,9 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "@material/mwc-list": "^0.17.2",
+    "@material/mwc-switch": "^0.17.2",
+    "@material/mwc-top-app-bar": "^0.17.2",
     "lit-element": "^2.3.1"
   }
 }
