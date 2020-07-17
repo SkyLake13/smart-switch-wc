@@ -11,7 +11,7 @@ export class SwitchesMqttClient {
         return this.client.disconnected;
     }
 
-    constructor(private readonly url: string, private readonly options: IClientOptions) {
+    constructor(private readonly url: string, private readonly options?: IClientOptions) {
         this.client = connect(this.url, this.options);
     }
 

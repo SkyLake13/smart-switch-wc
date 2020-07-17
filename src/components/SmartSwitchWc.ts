@@ -4,7 +4,6 @@ import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-top-app-bar';
 import "./..";
 import { SwitchesMqttClient } from '../services/mqtt-client';
-import { IClientOptions } from 'mqtt';
 
 export class SmartSwitchWc extends LitElement {
     public static get selector() { return 'smart-switch-wc' };
@@ -33,18 +32,18 @@ export class SmartSwitchWc extends LitElement {
     constructor() {
         super();
 
-        const url = 'mqtt://farmer.cloudmqtt.com';
-        const options: IClientOptions = {
-            username: 'ryzencvx', 
-            password: 'YotDoRJP_I8w',
-            port: 11772
-        };
+        const url = 'wss://ryzencvx:YotDoRJP_I8w@farmer.cloudmqtt.com:31772/mqtt';
 
-        const client = new SwitchesMqttClient(url, options).on('connect', () => {
+        const client = new SwitchesMqttClient(url).on('connect', () => {
             if(client.connected) {
-                client.subscribe('tv-event', (err: any) => {
-                    console.log('tv-event - ', err);
+                client.subscribe('tv-event', (err: any, payload: any) => {
+                    if(!err) {
+                        console.log('tv-event - ', payload);
+                    }
                 });
+
+                client.publish('tv-queue', '0', {});
+                client.publish('speaker-queue', '0', {});
             }
         });
     }
