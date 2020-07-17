@@ -1,8 +1,10 @@
-import { LitElement, html, TemplateResult, property, query, css, CSSResult } from 'lit-element';
+import { LitElement, html, TemplateResult, css, CSSResult } from 'lit-element';
 import '@material/mwc-list/mwc-list';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-top-app-bar';
 import "./..";
+import { SwitchesMqttClient } from '../services/mqtt-client';
+import { IClientOptions } from 'mqtt';
 
 export class SmartSwitchWc extends LitElement {
     public static get selector() { return 'smart-switch-wc' };
@@ -21,64 +23,38 @@ export class SmartSwitchWc extends LitElement {
             `];
     }
 
-
-    @property({
-        type: String, reflect: true
-    })
-    public text: string = 'Smart Switch component';
-
-
-    @query('div')
-    private div?: HTMLElement;
-
     private rows = [
         { name: 'TV', queue: 'tv-queue', event: 'tv-event'  },
         { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event'  }
     ];
 
+    // private mqttClient: SwitchesMqttClient;
+
     constructor() {
         super();
 
-        console.log('---------constructor--------');
-        console.log(this.div);
-        console.log('---------constructor--------');
+        const url = 'mqtt://farmer.cloudmqtt.com';
+        const options: IClientOptions = {
+            username: 'ryzencvx', 
+            password: 'YotDoRJP_I8w',
+            port: 11772
+        };
+
+        const client = new SwitchesMqttClient(url, options).on('connect', () => {
+            if(client.connected) {
+                client.subscribe('tv-event', (err: any) => {
+                    console.log('tv-event - ', err);
+                });
+            }
+        });
     }
 
     connectedCallback(): void {
         super.connectedCallback();
-        console.log('---------connectedCallback--------');
-        console.log(this.div);
-        console.log('---------connectedCallback--------');
     }
-
-    shouldUpdate(args: any): boolean {
-        console.log('---------shouldUpdate--------');
-        console.log(this.div);
-        console.log(args);
-        console.log('---------shouldUpdate--------');
-        return true;
-    }
-
-    async firstUpdated(args: any): Promise<void> {
-        console.log('---------firstUpdated--------');
-        console.log(this.div);
-        console.log(args);
-        console.log('---------firstUpdated--------');
-    }
-
-    updated(changedProps: any): void {
-        super.updated(changedProps);
-        console.log('---------updated--------');
-        console.log(changedProps);
-        console.log(this.div);
-        console.log('---------updated--------');
-    }
-    
 
     disconnectedCallback(): void {
-        console.log('---------disconnectedCallback--------');
-        console.log(this.div);
-        console.log('---------disconnectedCallback--------');
+
     }
 
     public render(): TemplateResult {
