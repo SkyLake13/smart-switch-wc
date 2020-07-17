@@ -1,0 +1,33 @@
+{
+  "name": "web-component-starter-kit",
+  "version": "1.0.0",
+  "description": "",
+  "main": "dist/bundle/index.js",
+  "typings": "dist/typings/index.d.ts",
+  "scripts": {
+    "prebuild": "rimraf dist",
+    "build:bundle": "npx webpack --config webpack.prod.js",
+    "build:typings": "tsc -p tsconfig.typings.json",
+    "build": "npm run build:bundle && npm run build:typings",
+    "pack": "npm pack",
+    "start": "npx webpack-dev-server --config webpack.dev.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "clean-webpack-plugin": "^3.0.0",
+    "html-webpack-plugin": "^4.3.0",
+    "ts-loader": "^7.0.5",
+    "typescript": "^3.9.5",
+    "webpack": "^5.0.0-beta.22",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0",
+    "webpack-merge": "^4.2.2"
+  },
+  "dependencies": {
+    "lit-element": "^2.3.1"
+  }
+}
