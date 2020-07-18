@@ -19,35 +19,10 @@ export class SwitchRow extends LitElement {
 
     constructor() {
         super();
-
-        console.log('---------constructor--------');
     }
 
     connectedCallback(): void {
         super.connectedCallback();
-        console.log('---------connectedCallback--------');
-    }
-
-    shouldUpdate(args: any): boolean {
-        console.log('---------shouldUpdate--------');
-        console.log(args);
-        return true;
-    }
-
-    async firstUpdated(args: any): Promise<void> {
-        console.log(args);
-        console.log('---------firstUpdated--------');
-    }
-
-    updated(changedProps: any): void {
-        super.updated(changedProps);
-        console.log('---------updated--------');
-        console.log(changedProps);
-    }
-
-
-    disconnectedCallback(): void {
-        console.log('---------disconnectedCallback--------');
     }
 
     private dispatchToggleEvent(): void {
