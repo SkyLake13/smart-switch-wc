@@ -23,10 +23,10 @@ export class SmartSwitchWc extends LitElement {
             `];
     }
 
-    public get rows(): { name: string, queue: string, event: string, onValue: string, offValue: string }[] {
+    public get rows(): { name: string, queue: string, event: string, value: boolean }[] {
         return [
-            { name: 'TV', queue: 'tv-queue', event: 'tv-event', onValue: '1', offValue: '0' },
-            { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', onValue: '1', offValue: '0' }
+            { name: 'TV', queue: 'tv-queue', event: 'tv-event', value: false },
+            { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', value: true }
         ];
     }
 
@@ -56,13 +56,17 @@ export class SmartSwitchWc extends LitElement {
 
         this.rows.forEach(row => {
             this.switchService?.subscribeTo(row.event).then(_ => {
-               // console.log('subscription - ', _);
+               console.log('subscription - ', _);
             });
         });
     }
 
     disconnectedCallback(): void {
-
+       /*  this.rows.forEach(row => {
+            this.switchService?.unsubscribeTo(row.event).then(_ => {
+               console.log('unsubscription - ', _);
+            });
+        }); */
     }
 
     public render(): TemplateResult {
@@ -94,7 +98,7 @@ export class SmartSwitchWc extends LitElement {
                 <span slot="graphic" class="material-icons">tv</span>
                 <span>${row.name}</span>
                 <span slot="meta">
-                    <switch-row @toggle="${() => this._onToggle(row.queue)}">
+                    <switch-row ?checked="${row.value}" @toggle="${(event: any) => this._onToggle(row.queue, event)}">
                     </switch-row>
                 </span>
             </mwc-list-item>
@@ -102,10 +106,15 @@ export class SmartSwitchWc extends LitElement {
         `;
     }
 
-    private _onToggle(queueName: string) {
+    private _onToggle(queueName: string, event: CustomEvent) {
         if(this.switchService?.ready) {
-            this.switchService.on(queueName);
-            console.log(`${queueName} clicked`);
+            if(event.detail?.checked) {
+                this.switchService.on(queueName);
+            } else {
+                this.switchService.off(queueName);
+            }
+
+            console.log(`${queueName} - ${event.detail?.checked}`)
         }
     }
 }

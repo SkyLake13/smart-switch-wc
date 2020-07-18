@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult, property, css, CSSResult } from 'lit-element';
+import { LitElement, html, TemplateResult, css, CSSResult, property } from 'lit-element';
 import '@material/mwc-switch';
 
 export class SwitchRow extends LitElement {
@@ -11,11 +11,10 @@ export class SwitchRow extends LitElement {
             `];
     }
 
-
     @property({
-        type: String, reflect: true
+        type: Boolean, reflect: true, attribute: true
     })
-    public name: string = '';
+    public checked: boolean = false;
 
     constructor() {
         super();
@@ -25,19 +24,24 @@ export class SwitchRow extends LitElement {
         super.connectedCallback();
     }
 
+    private toggle(): void {
+        this.checked = !this.checked;
+        this.dispatchToggleEvent();
+    }
+
     private dispatchToggleEvent(): void {
         this.dispatchEvent(new CustomEvent('toggle', {
             bubbles: true,
             composed: true,
             detail: {
-                name: this.name
+                checked: this.checked
             }
         }));
     }
 
     public render(): TemplateResult {
         return html`
-                <mwc-switch @change="${() => this.dispatchToggleEvent()}"></mwc-switch>
+                <mwc-switch ?checked="${this.checked}" @change="${() => this.toggle()}"></mwc-switch>
         `;
     }
 }
