@@ -47,9 +47,7 @@ export class SmartSwitchWc extends LitElement {
     async connectedCallback(): Promise<void> {
         super.connectedCallback();
 
-        const switchEvents = this.rows.map(r => r.event);
-
-        this.switchService.subscribeToSwitch(switchEvents);
+        this.switchService.subscribeToSwitch(this.rows.map(r => r.event));
 
         this.switchService.onMessage = (topic: string, payload: Buffer, _: any) => {
             this.updateSwitchState(topic, payload);
