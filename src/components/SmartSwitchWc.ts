@@ -16,11 +16,11 @@ export class SmartSwitchWc extends LitElement {
                    padding-left: 10px
                }
 
-               mwc-top-app-bar {
+                mwc-top-app-bar {
                     --mdc-theme-primary: orange;
                     --mdc-theme-on-primary: black;
                 }
-            `];
+        `];
     }
 
     @property({
@@ -30,12 +30,12 @@ export class SmartSwitchWc extends LitElement {
         }
     })
     public rows: { name: string, queue: string, event: string, value: boolean }[] = [
-            { name: 'TV', queue: 'tv-queue', event: 'tv-event', value: false },
-            { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', value: false }
+        { name: 'TV', queue: 'tv-queue', event: 'tv-event', value: false },
+        { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', value: false }
     ];
 
     private switchService: SwitchService;
-    
+
 
     constructor() {
         super();
@@ -52,16 +52,20 @@ export class SmartSwitchWc extends LitElement {
         this.switchService.subscribeToSwitch(switchEvents);
 
         this.switchService.onMessage = (topic: string, payload: Buffer, _: any) => {
-            const row = this.rows.find(r => r.event === topic);
-            if(row) {
-                row.value = payload.toString() === '1' ? true : false;
-                this.rows = [...this.rows];
-            }
+            this.updateSwitchState(topic, payload);
         };
     }
 
+    private updateSwitchState(topic: string, payload: Buffer): void {
+        const row = this.rows.find(r => r.event === topic);
+        if (row) {
+            row.value = payload.toString() === '1' ? true : false;
+            this.rows = [...this.rows];
+        }
+    }
+
     disconnectedCallback(): void {
-        
+
     }
 
     public render(): TemplateResult {
@@ -102,8 +106,8 @@ export class SmartSwitchWc extends LitElement {
     }
 
     private _onToggle(queueName: string, event: CustomEvent) {
-        if(this.switchService?.ready) {
-            if(event.detail?.checked) {
+        if (this.switchService?.ready) {
+            if (event.detail?.checked) {
                 this.switchService.on(queueName);
             } else {
                 this.switchService.off(queueName);
