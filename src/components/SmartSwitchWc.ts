@@ -1,4 +1,4 @@
-import { LitElement, html, TemplateResult, css, CSSResult } from 'lit-element';
+import { LitElement, html, TemplateResult, css, CSSResult, property } from 'lit-element';
 import '@material/mwc-list/mwc-list';
 import '@material/mwc-list/mwc-list-item';
 import '@material/mwc-top-app-bar';
@@ -23,14 +23,18 @@ export class SmartSwitchWc extends LitElement {
             `];
     }
 
-    public get rows(): { name: string, queue: string, event: string, value: boolean }[] {
-        return [
+    @property({
+        type: Array,
+        hasChanged: () => {
+            return true;
+        }
+    })
+    public rows: { name: string, queue: string, event: string, value: boolean }[] = [
             { name: 'TV', queue: 'tv-queue', event: 'tv-event', value: false },
-            { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', value: true }
-        ];
-    }
+            { name: 'Speaker', queue: 'speaker-queue', event: 'speaker-event', value: false }
+    ];
 
-    private switchService: SwitchService | undefined;
+    private switchService: SwitchService;
     
 
     constructor() {
@@ -38,35 +42,26 @@ export class SmartSwitchWc extends LitElement {
 
         const url = 'wss://ryzencvx:YotDoRJP_I8w@farmer.cloudmqtt.com:31772/mqtt';
         this.switchService = new SwitchService(url);
-        this.switchService?.connect();
     }
 
-    connectedCallback(): void {
+    async connectedCallback(): Promise<void> {
         super.connectedCallback();
 
-        this.switchService?.onMessage().then((_) => {
-            console.log('topic -> ', _.topic);
-            console.log('payload -> ', _.payload.toString());
-            console.log('package -> ', _.packet);
-        });
+        const switchEvents = this.rows.map(r => r.event);
 
-        this.switchService?.onError().then((_) => {
-            console.log('error -> ', _);
-        });
+        this.switchService.subscribeToSwitch(switchEvents);
 
-        this.rows.forEach(row => {
-            this.switchService?.subscribeTo(row.event).then(_ => {
-               console.log('subscription - ', _);
-            });
-        });
+        this.switchService.onMessage = (topic: string, payload: Buffer, _: any) => {
+            const row = this.rows.find(r => r.event === topic);
+            if(row) {
+                row.value = payload.toString() === '1' ? true : false;
+                this.rows = [...this.rows];
+            }
+        };
     }
 
     disconnectedCallback(): void {
-       /*  this.rows.forEach(row => {
-            this.switchService?.unsubscribeTo(row.event).then(_ => {
-               console.log('unsubscription - ', _);
-            });
-        }); */
+        
     }
 
     public render(): TemplateResult {
@@ -113,8 +108,6 @@ export class SmartSwitchWc extends LitElement {
             } else {
                 this.switchService.off(queueName);
             }
-
-            console.log(`${queueName} - ${event.detail?.checked}`)
         }
     }
 }
