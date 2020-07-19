@@ -7,7 +7,11 @@ export class SwitchRow extends LitElement {
     public static get styles(): CSSResult[] {
         return [
             css`
-
+                mwc-switch {
+                    --mdc-theme-surface: orange;
+                    /* --mdc-theme-on-surface: orange; */
+                    --mdc-theme-secondary: black;
+                }
             `];
     }
 
@@ -41,7 +45,7 @@ export class SwitchRow extends LitElement {
 
     public render(): TemplateResult {
         return html`
-                <mwc-switch ?checked="${this.checked}" @change="${() => this.toggle()}"></mwc-switch>
+            <mwc-switch ?checked="${this.checked}" @change="${() => this.toggle()}"></mwc-switch>
         `;
     }
 }
